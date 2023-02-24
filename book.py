@@ -71,49 +71,52 @@ def correct_birthday(text:str):
     #         print('неверный формат')
     #         text = input('Введите дату рождения контакта в формате дд.мм.гггг либо * : ')
     #         correct_birthday(text)
-    if len(text) == 8 and text.isdigit():
-
-        text1 = text[:2]+'.'+text[2:4]+'.'+text[4:]
-        print(text1)
-        return text1
-    else:
-        text = input('Введите дату рождения контакта в формате ддммгггг либо * : ')
-        correct_birthday(text)
+    while True:
+        if len(text) == 8 and text.isdigit() or text == '*':
+            return text
+        else:
+            text = input('Введите дату рождения контакта в формате ддммгггг либо * : ')
+            correct_birthday(text)
 
 
 def correct_mail(text):
     '''проверка email'''
     while True:
-        for i in range(len(mail)):
-            if mail[i] == '@' and '.' in mail[i:]:
-                return mail
+        if text == '*':
+            return text
+        elif text != '*':
+            for i in range(len(text)):
+                if text[i] == '@' and '.' in text[i:]:
+                    return text
         print('Укажите корректный email адрес.')
-        mail = input(f'{text} > ')
+        text = input('Введите email контакта или *: ')
+        correct_mail(text)
+
 
 def add_new_contact():
     data = load_phonebook(phonebook)
     contact = ''
     print('Введите данные контакта')
     contact_surname = input('Введите фамилию контакта: ')
-    is_correct = correct_contact_name(contact_surname)
+    is_correct_name = correct_contact_name(contact_surname)
     contact_name = input('Введите имя контакта: ')
-    is_correct = correct_contact_name(contact_name)
-    if is_correct:
+    is_correct_surname = correct_contact_name(contact_name)
+    if is_correct_name and is_correct_surname:
         contact = contact_surname.title() + ' ' + contact_name.title()
-        print(contact)
         if contact in data.keys():
             print('Данный контакт существует')
         else:
             contact_details = []
             contact_number = input('Введите номер +7 код номер без пробелов: ')
-            is_correct = correct_number(contact_number)
+            contact_number = correct_number(contact_number)
             contact_details.append(contact_number)
             contact_birthday = str(input('Введите дату рождения контакта в формате ддммгггг либо * : '))
-            is_correct = correct_birthday(contact_birthday)
-            contact_birthday = contact_birthday[:2]+'.'+contact_birthday[2:4]+'.'+contact_birthday[4:]
+            contact_birthday = correct_birthday(contact_birthday)
+            if contact_birthday != '*':
+                contact_birthday = contact_birthday[:2]+'.'+contact_birthday[2:4]+'.'+contact_birthday[4:]
             contact_details.append(contact_birthday)
-            contact_mail = input('Введите email контакта либо * : ')
-            is_correct = correct_birthday(contact_mail)
+            contact_mail = str(input('Введите email контакта либо * : '))
+            contact_mail = correct_mail(contact_mail)
             contact_details.append(contact_mail)
             phonebook[contact] = contact_details
             save_phonebook(phonebook)
@@ -144,7 +147,7 @@ def change_contact():
             a = input('Вы хотите изменить номер телефона? y/n \n')
             if a == 'y':
                 contact_number = input('Введите номер +7 код номер без пробелов: ')
-                correct_number(contact_number)
+                contact_number = correct_number(contact_number)
                 contact_new_details.append(contact_number)
             elif a == 'n':
                 contact_number = contact_old_details[0]
@@ -152,8 +155,9 @@ def change_contact():
             a1 = input('Вы хотите изменить дату рождения? y/n \n')
             if a1 == 'y':
                 contact_birthday = str(input('Введите дату рождения контакта в формате ддммгггг либо * : '))
-                correct_birthday(contact_birthday)
-                contact_birthday = contact_birthday[:2]+'.'+contact_birthday[2:4]+'.'+contact_birthday[4:]
+                contact_birthday = correct_birthday(contact_birthday)
+                if contact_birthday != '*':
+                    contact_birthday = contact_birthday[:2]+'.'+contact_birthday[2:4]+'.'+contact_birthday[4:]
                 contact_new_details.append(contact_birthday)
                 
             elif a1 == 'n':
@@ -161,8 +165,8 @@ def change_contact():
                 contact_new_details.append(contact_birthday)
             a2 = input('Вы хотите изменить email? y/n \n')
             if a2 == 'y':
-                contact_mail = input('Введите email контакта либо * : ')
-                correct_birthday(contact_mail)
+                contact_mail = str(input('Введите email контакта либо * : '))
+                contact_mail = correct_mail(contact_mail)
                 contact_new_details.append(contact_mail)
             elif a2 == 'n':
                 contact_mail = contact_old_details[2]
