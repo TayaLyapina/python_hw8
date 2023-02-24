@@ -12,7 +12,7 @@ welcome = ('''
 Выход из программы - q 
 ''')
 
-phonebook = {'Иванов Иван Иванович': ['+79521111111', '14.02.2000', 'mail@mail.ru'], 'Петрова Юлия':['+78524444444', '*', 'gmail@gmail.com']}
+phonebook = {'Иванов Иван': ['+79521111111', '14.02.2000', 'mail@mail.ru'], 'Петрова Юлия':['+78524444444', '*', 'gmail@gmail.com']}
 
 def save_phonebook(data: dict, file_name='phonebook.json'):
     with open(file_name, "w", encoding="utf-8") as s:
@@ -44,13 +44,25 @@ def search_contact():
     else:
         print("Такого контакта не существует")
 
+
 def correct_contact_name(name: str):
-    if name == '*' or name.isalpha():
-        return name
-    elif not name.isalpha():
-        print('Некорректный ввод')
-        name = input('Введите имя контакта: ')
-        correct_contact_name(name)
+    while True:
+        if name == '*' or name.isalpha():
+            return name
+        else:
+            print('Некорректный ввод')
+            name = input('Введите имя контакта: ')
+            correct_contact_name(name)
+
+def correct_contact_surname(name: str):
+    while True:
+        if name == '*' or name.isalpha():
+            return name
+        else:
+            print('Некорректный ввод')
+            name = str(input('Введите имя фамилию: '))
+            correct_contact_surname(name)
+
 
 def correct_number(text):
     while True:
@@ -98,30 +110,29 @@ def add_new_contact():
     contact = ''
     print('Введите данные контакта')
     contact_surname = input('Введите фамилию контакта: ')
-    is_correct_name = correct_contact_name(contact_surname)
+    correct_surname = correct_contact_surname(contact_surname)
     contact_name = input('Введите имя контакта: ')
-    is_correct_surname = correct_contact_name(contact_name)
-    if is_correct_name and is_correct_surname:
-        contact = contact_surname.title() + ' ' + contact_name.title()
-        if contact in data.keys():
-            print('Данный контакт существует')
-        else:
-            contact_details = []
-            contact_number = input('Введите номер +7 код номер без пробелов: ')
-            contact_number = correct_number(contact_number)
-            contact_details.append(contact_number)
-            contact_birthday = str(input('Введите дату рождения контакта в формате ддммгггг либо * : '))
-            contact_birthday = correct_birthday(contact_birthday)
-            if contact_birthday != '*':
-                contact_birthday = contact_birthday[:2]+'.'+contact_birthday[2:4]+'.'+contact_birthday[4:]
-            contact_details.append(contact_birthday)
-            contact_mail = str(input('Введите email контакта либо * : '))
-            contact_mail = correct_mail(contact_mail)
-            contact_details.append(contact_mail)
-            phonebook[contact] = contact_details
-            save_phonebook(phonebook)
-            print()
-            print("Контакт успешно добавлен!")
+    correct_name = correct_contact_name(contact_name)
+    contact = correct_surname.title() + ' ' + correct_name.title()
+    if contact in data.keys():
+        print('Данный контакт существует')
+    else:
+        contact_details = []
+        contact_number = input('Введите номер +7 код номер без пробелов: ')
+        contact_number = correct_number(contact_number)
+        contact_details.append(contact_number)
+        contact_birthday = str(input('Введите дату рождения контакта в формате ддммгггг либо * : '))
+        contact_birthday = correct_birthday(contact_birthday)
+        if contact_birthday != '*':
+            contact_birthday = contact_birthday[:2]+'.'+contact_birthday[2:4]+'.'+contact_birthday[4:]
+        contact_details.append(contact_birthday)
+        contact_mail = str(input('Введите email контакта либо * : '))
+        contact_mail = correct_mail(contact_mail)
+        contact_details.append(contact_mail)
+        phonebook[contact] = contact_details
+        save_phonebook(phonebook)
+        print()
+        print("Контакт успешно добавлен!")
 
 def delete_contact():
     'Удаление контакта целиком'
@@ -139,7 +150,6 @@ def delete_contact():
 def change_contact():
     data = load_phonebook(phonebook)
     contact = input('Введите имя контакта, который необходимо изменить: ')
-
     for k in data.keys():
         if contact.lower() == k.lower():
             contact_old_details = data[k]
